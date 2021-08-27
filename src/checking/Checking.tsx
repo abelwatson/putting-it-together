@@ -1,37 +1,51 @@
-import React from 'react';
-import { BalanceView } from './BalanceView';
-import { TransactionForm } from './TransactionForm';
-import { TransHistory } from './TransHistory';
-
+import React from 'react'
+import { BalanceView } from './BalanceView'
+import { TransactionForm } from './TransactionForm'
+import { TransactionHistory } from './TransHistory'
 
 type CheckingProps = {}
 type CheckingState = {
-    balance: number
+    balance: number,
+    transactions: Transaction[]
 }
-//React.Component<Props, State>
+
+export type Transaction = {
+    amount: number,
+    type: "Deposit" | "Withdraw"
+}
+// React.Component<Props, State>
 export class Checking extends React.Component<CheckingProps, CheckingState> {
     constructor(props: CheckingProps) {
         super(props)
         this.state = {
-            balance: 0
+            balance: 0,
+            transactions: []
         }
         this.updateBalance = this.updateBalance.bind(this)
     }
 
-    updateBalance(amount: number){
-        this.setState({balance: this.state.balance + amount})
+    updateBalance(amount: number) {
+        let transaction: Transaction = {
+            amount: amount,
+            type: amount > 0 ? "Deposit" : "Withdraw"
+        }
+
+        this.setState({
+            balance: this.state.balance + amount,
+            transactions: [...this.state.transactions, transaction]
+        })
     }
 
     render() {
-        const { balance } = this.state
+        const { balance, transactions } = this.state
         return (
             <>
                 <section>
                     <BalanceView balance={balance} />
-                    <TransactionForm handleSubmit={this.updateBalance}/>
+                    <TransactionForm handleSubmit={this.updateBalance} />
                 </section>
                 <section>
-                    <TransHistory />
+                    <TransactionHistory transactions={transactions} />
                 </section>
             </>
         )
